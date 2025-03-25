@@ -20,7 +20,7 @@ All of these components are readily available at the time of writing, you should
 
 ### PCB
 
-The [`pcb`](/pcb/) directory contains the KiCad (9.0) design files for the Wemos D1 mini shield PCB. [PCBWay](https://www.pcbway.com/) reached out to me and was kind enough to support this project. When the PCB's have been received I will post pictures here and a link to the [PCBWay shared projects page](https://member.pcbway.com/specials/SharedProject) once it's done for easy ordering.
+The [`pcb`](/pcb/) directory contains the KiCad (9.0) design files for the Wemos D1 mini shield PCB. [PCBWay](https://www.pcbway.com/) reached out to me and was kind enough to support this project. When the PCBs have been received I will post pictures here and a link to the [PCBWay shared projects page](https://member.pcbway.com/specials/SharedProject) once it's done for easy ordering.
 
 ![PCB front](img/pcb_front.png)  ![PCBWay logo](img/pcbway-logo-color.png) ![PCB front](img/pcb_back.png)
 
@@ -56,6 +56,8 @@ Connect the GXHT30 and SSD1306 to the Wemos D1 mini's `3v3` pin, connect the gro
 
 This is a PlatformIO project. I'm sure someone will help convert this to an Arduino IDE project, but it's not going to be me.
 
+### How to get started
+
 1. Open this folder in [PlatformIO for VSCode](https://platformio.org/platformio-ide)
 2. Copy [`include/example_config.h`](include/example_config.h) to `include/config.h` and adjust the **devicename** and OTA update password
 3. Copy [`example_env_secrets.ini`](example_env_secrets.ini) to `env_secrets.ini` and set the same password for the `--auth` option
@@ -65,6 +67,21 @@ This is a PlatformIO project. I'm sure someone will help convert this to an Ardu
 7. You should now be able to connect to a WiFi AP named after your **devicename** (see step 2); connect to it, set your WiFi credentials and save
 8. The Wemos D1 mini should reboot and the OLED display should (shortly) show the IP; the display should show any other errors or problems as well
 9. Next time you update you can use the OTA configuration (`default_envs` set to `d1_mini_ota` and the correct IP in `env_secrets.ini` at the `upload_port` entry), no more need for USB cables
+
+### Once it's up and running
+
+The display will show the temperature in °C and the humidity in %. If your sensor is way off you can fix this by setting `TEMPERATUREOFFSET` in `include/config.h` and updating the device. The temperature and humidity will also be output to the serial port every time the sensor is read (see `UPDATEINTERVAL`) and when you use the `/read` endpoint of the REST API (so: `http://<deviceip>/read` [`GET`]) you'll get the readings as json:
+
+```json
+{
+   "humidity": 26.7,
+   "offset": -7,
+   "temperature_c": 23.17,
+   "temperature_f": 73.706
+}
+```
+
+These values are also only update every time the sensor is read (again: see `UPDATEINTERVAL`). There is also a `/reset` endpoint ([PUT]) that will reboot the device.
 
 ## Attribution
 
