@@ -10,15 +10,19 @@ This project supports OTA updates, uses the WiFi manager to configure the WiFi a
 
 You'll need:
 
-* Wemos D1 mini
-* GXHT30 I²C temperature & humidity sensor
-* SSD1306 I²C 0.96" OLED display
+* [Wemos D1 mini or clone](https://aliexpress.com/w/wholesale-wemos-d1-mini.html)
+* [GXHT30 I²C temperature & humidity sensor module](https://aliexpress.com/w/wholesale-GXHT30-module.html)
+* [SSD1306 I²C 0.96" OLED display](https://aliexpress.com/w/wholesale-SSD1306-0.96%22.html)
+* 2x [2.54mm female header 8 pins](https://aliexpress.com/w/wholesale-2.54mm-female-header-8-pins.html)
+* 2x 8 pin and 2x 4 pin [2.54mm pin headers](https://aliexpress.com/w/wholesale-single-row-male-2.54mm.html)
 
 All of these components are readily available at the time of writing, you should be able to easily source them.
 
 ### PCB
 
 The [`pcb`](/pcb/) directory contains the KiCad (9.0) design files for the Wemos D1 mini shield PCB. [PCBWay](https://www.pcbway.com/) reached out to me and was kind enough to support this project. When the PCB's have been received I will post photo's here and a link to the [PCBWay shared projects page](https://member.pcbway.com/specials/SharedProject) once it's done for easy ordering.
+
+In a next iteration I'm hoping to integrate the GXHT30 on the shield, but being pretty new to PCB design this first iteration uses a module.
 
 ### DIY
 
