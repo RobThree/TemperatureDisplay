@@ -2,7 +2,7 @@
 
 Uses an Wemos D1 mini with a GXHT30 I²C temperature & humidity sensor and a SSD1306 I²C 0.96" OLED display.
 
-This project supports OTA updates, uses the WiFi manager to configure the WiFi and provides a `/read` endpoint to get the temperature and humidity as JSON and a `/reset` endpoint (`PUT`) to reset the module. The readings (and display) are updated every 2 seconds.
+This project supports OTA updates, uses the WiFi manager to configure the WiFi and provides a REST AOU to get the temperature and humidity as JSON. The readings (and display) are updated every 2 seconds and also output to serial.
 
 ![Example](img/example.jpg)
 
@@ -81,7 +81,7 @@ The display will show the temperature in °C and the humidity in %. If your sens
 }
 ```
 
-These values are also only update every time the sensor is read (again: see `UPDATEINTERVAL`). There is also a `/reset` endpoint ([PUT]) that will reboot the device.
+These values are also only update every time the sensor is read (again: see `UPDATEINTERVAL`). There is also a `/reset` endpoint ([`PUT`]) that will reboot the device.
 
 ## Attribution
 
