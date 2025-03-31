@@ -9,25 +9,16 @@
 #include <Wire.h>
 #include <config.h>
 
+// See include/example_config.h for configuration. Make sure you copy it
+// to include/config.h and enter your configuration data there.
+
 Adafruit_SHT31 sht31 = Adafruit_SHT31();
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // -1 means no reset pin
+ESP8266WebServer server(HTTP_PORT);
+ESP8266HTTPUpdateServer httpUpdateServer;
 
 float temp;
 float humidity;
-
-// See include/example_config.h for the definition of these constants. Make sure you copy it
-// to include/config.h and enter your configuration data there.
-
-const char deviceName[] = DEVICENAME;
-const char otaPassword[] = OTAPASSWORD;
-
-const unsigned long portalTimeout = PORTALTIMEOUT;      // seconds
-const unsigned long wifiConnectTimeout = WIFICONNECTTIMEOUT; // seconds
-const uint8_t wifiConnectRetries = WIFICONNECTRETRIES;
-const float tempoffset = TEMPERATUREOFFSET; // Temperature offset / correction
-
-ESP8266WebServer server(HTTP_PORT);
-ESP8266HTTPUpdateServer httpUpdateServer;
 
 void setStatus(const String &status) {
     Serial.println(status);
@@ -49,11 +40,11 @@ void setup() {
     Wire.begin();
 
     WiFiManager wifiManager;
-    wifiManager.setConfigPortalTimeout(portalTimeout);
-    wifiManager.setConnectTimeout(wifiConnectTimeout);
-    wifiManager.setConnectRetries(wifiConnectRetries);
+    wifiManager.setConfigPortalTimeout(PORTALTIMEOUT);
+    wifiManager.setConnectTimeout(WIFICONNECTTIMEOUT);
+    wifiManager.setConnectRetries(WIFICONNECTRETRIES);
     wifiManager.setWiFiAutoReconnect(true);
-    if (!wifiManager.autoConnect(deviceName)) {
+    if (!wifiManager.autoConnect(DEVICENAME)) {
         restart("Autconnect failed...");
     }
 
@@ -79,8 +70,9 @@ void setup() {
         JsonDocument root;
         root["temperature_c"] = temp;
         root["temperature_f"] = temp * 9 / 5 + 32;
-        root["offset"] = tempoffset;
+        root["offset"] = TEMPERATUREOFFSET;
         root["humidity"] = humidity;
+        root["rssi"] = WiFi.RSSI();
 
         String response;
         serializeJson(root, response); // Convert JSON object to string
@@ -98,8 +90,8 @@ void setup() {
     Serial.println("Starting HTTP server");
     server.begin();
 
-    ArduinoOTA.setPassword(otaPassword);
-    ArduinoOTA.setHostname(deviceName); // Set the OTA device hostname
+    ArduinoOTA.setPassword(OTAPASSWORD);
+    ArduinoOTA.setHostname(DEVICENAME); // Set the OTA device hostname
     ArduinoOTA.onStart([]() {
         String type = (ArduinoOTA.getCommand() == U_FLASH) ? "sketch" : "filesystem";
         setStatus("Start updating " + type);
@@ -156,7 +148,7 @@ void loop() {
     // Check if it's time to update the display
     if (currentMillis - previousMillis >= UPDATEINTERVAL) {
         previousMillis = currentMillis;
-        temp = sht31.readTemperature() + tempoffset;
+        temp = sht31.readTemperature() + TEMPERATUREOFFSET;
         humidity = sht31.readHumidity();
 
         Serial.printf("Temperature: %.2f C, Humidity: %.2f %%\n", temp, humidity);
