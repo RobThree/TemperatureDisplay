@@ -22,7 +22,7 @@ All of these components are readily available at the time of writing, you should
 
 The [`pcb`](/pcb/) directory contains the KiCad (9.0) design files for the Wemos D1 mini shield PCB. [PCBWay](https://www.pcbway.com/) reached out to me and was kind enough to support this project. When the PCBs have been received I will post pictures here and a link to the [PCBWay shared projects page](https://member.pcbway.com/specials/SharedProject) once it's done for easy ordering.
 
-![PCB front](img/pcb_front.png)  ![PCBWay logo](img/pcbway-logo-color.png) ![PCB front](img/pcb_back.png)
+![PCB front](img/pcb_front.png)  [![PCBWay logo](img/pcbway-logo-color.png)](https://www.pcbway.com/) ![PCB front](img/pcb_back.png)
 
 In a next iteration I'm hoping to integrate the GXHT30 on the shield, but being pretty new to PCB design this first iteration uses a module.
 
@@ -70,14 +70,26 @@ This is a PlatformIO project. I'm sure someone will help convert this to an Ardu
 
 ### Once it's up and running
 
-The display will show the temperature in °C and the humidity in %. If your sensor is way off you can fix this by setting `TEMPERATUREOFFSET` in `include/config.h` and updating the device. The temperature and humidity will also be output to the serial port every time the sensor is read (see `UPDATEINTERVAL`) and when you use the `/read` endpoint of the REST API (so: `http://<deviceip>/read` [`GET`]) you'll get the readings as json:
+The display will show the temperature in °C or Fahrenheit (see `include/config.h`) and the humidity in %RH (Relative Humidity). If your sensor is way off you can fix this by setting `TEMPERATUREOFFSET` and/or `HUMIDITYOFFSET` in `include/config.h` and updating the device. The temperature and humidity will also be output to the serial port every time the sensor is read (see `UPDATEINTERVAL`) and when you use the `/read` endpoint of the REST API (e.g. `http://<deviceip>/read` [`GET`]) you'll get the readings as json:
 
 ```json
 {
-   "humidity": 26.7,
-   "offset": -7,
-   "temperature_c": 23.17,
-   "temperature_f": 73.706
+  "celsius": {
+    "temperature": 23.57,
+    "offset": -5
+  },
+  "fahrenheit": {
+    "temperature": 74.426,
+    "offset": 23
+  },
+  "humidity": {
+    "relative_perc": 32.89,
+    "relative_perc_offset": 8
+  },
+  "wifi": {
+    "rssi": -46
+  },
+  "lastupdate": "0.12 seconds ago"
 }
 ```
 

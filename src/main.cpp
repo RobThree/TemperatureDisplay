@@ -163,7 +163,7 @@ void loop() {
         temp = sht31.readTemperature() + TEMPERATUREOFFSET;
         humidity = constrain(sht31.readHumidity() + HUMIDITYOFFSET, 0, 100);
 
-        Serial.printf("Temperature: %.2f C, Humidity: %.2f %%\n", temp, humidity);
+        Serial.printf("Temperature: %.2f C, %.2f F, humidity: %.2f %%RH\n", temp, toFahrenheit(temp), humidity);
 
         // Clear display
         display.clearDisplay();
