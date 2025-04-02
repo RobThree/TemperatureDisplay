@@ -19,6 +19,7 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 
 float temp;
 float humidity;
+unsigned long previousMillis = 0; // Store the last time the display was updated
 
 void setStatus(const String &status) {
     Serial.println(status);
@@ -34,6 +35,8 @@ void restart(const String &status) {
     delay(3000);
     ESP.restart();
 }
+
+float toFahrenheit(float celsius) { return (celsius * 9.0 / 5.0) + 32.0; }
 
 void setup() {
     Serial.begin(SERIAL_BAUDRATE);
@@ -68,11 +71,22 @@ void setup() {
     httpUpdateServer.setup(&server);
     server.on("/read", HTTP_GET, []() {
         JsonDocument root;
-        root["temperature_c"] = temp;
-        root["temperature_f"] = temp * 9 / 5 + 32;
-        root["offset"] = TEMPERATUREOFFSET;
-        root["humidity"] = humidity;
-        root["rssi"] = WiFi.RSSI();
+        JsonObject celsiusnode = root["celsius"].to<JsonObject>();
+        celsiusnode["temperature"] = temp;
+        celsiusnode["offset"] = TEMPERATUREOFFSET;
+        JsonObject fahrenheitnode = root["fahrenheit"].to<JsonObject>();
+        fahrenheitnode["temperature"] = toFahrenheit(temp);
+        fahrenheitnode["offset"] = toFahrenheit(TEMPERATUREOFFSET);
+        JsonObject humiditynode = root["humidity"].to<JsonObject>();
+        humiditynode["relative_perc"] = humidity;
+        humiditynode["relative_perc_offset"] = HUMIDITYOFFSET;
+        JsonObject wifinode = root["wifi"].to<JsonObject>();
+        wifinode["rssi"] = WiFi.RSSI();
+
+        char lastUpdateStr[32];
+        snprintf(lastUpdateStr, sizeof(lastUpdateStr), "%.2f seconds ago",
+                 (millis() - previousMillis) / 1000.0);
+        root["lastupdate"] = lastUpdateStr;
 
         String response;
         serializeJson(root, response); // Convert JSON object to string
@@ -121,8 +135,6 @@ void setup() {
     delay(2000);
 }
 
-unsigned long previousMillis = 0; // Store the last time the display was updated
-
 void loop() {
     server.handleClient();
     ArduinoOTA.handle();
@@ -149,7 +161,7 @@ void loop() {
     if (currentMillis - previousMillis >= UPDATEINTERVAL) {
         previousMillis = currentMillis;
         temp = sht31.readTemperature() + TEMPERATUREOFFSET;
-        humidity = sht31.readHumidity();
+        humidity = constrain(sht31.readHumidity() + HUMIDITYOFFSET, 0, 100);
 
         Serial.printf("Temperature: %.2f C, Humidity: %.2f %%\n", temp, humidity);
 
@@ -160,8 +172,13 @@ void loop() {
         display.setCursor(0, 0);
         display.print("Temp: ");
         display.setCursor(15, 15);
-        display.print(temp);
-        display.print(" C");
+        if (SHOWFAHRENHEIT) {
+            display.print(toFahrenheit(temp));
+            display.print(" F");
+        } else {
+            display.print(temp);
+            display.print(" C");
+        }
 
         // Print humidity
         display.setCursor(0, 30);

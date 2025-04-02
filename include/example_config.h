@@ -5,7 +5,9 @@
 
 #define DEVICENAME          "devicename-here"
 #define OTAPASSWORD         "my_ota_secret"
-#define TEMPERATUREOFFSET   -7.0    // Temperature offset / correction
+#define TEMPERATUREOFFSET   -5.0    // Temperature offset / correction in Celcius
+#define HUMIDITYOFFSET      8.0     // Humidity offset / correction in percentage
+#define SHOWFAHRENHEIT      false   // Show Fahrenheit on display (celcius otherwise)
 
 #define PORTALTIMEOUT       90
 #define WIFICONNECTTIMEOUT  10
