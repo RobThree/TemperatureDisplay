@@ -20,9 +20,13 @@ All of these components are readily available at the time of writing, you should
 
 ### PCB
 
-The [`pcb`](/pcb/) directory contains the KiCad (9.0) design files for the Wemos D1 mini shield PCB. [PCBWay](https://www.pcbway.com/) reached out to me and was kind enough to support this project. When the PCBs have been received I will post pictures here and a link to the [PCBWay shared projects page](https://member.pcbway.com/specials/SharedProject) once it's done for easy ordering.
+The [`pcb`](/pcb/) directory contains the KiCad (9.0) design files for the Wemos D1 mini shield PCB. [PCBWay](https://www.pcbway.com/) reached out to me and was kind enough to support this project. The project is available at [PCBWay's Shared Projects](https://www.pcbway.com/project/shareproject/Temperature_display_f0e459fd.html) for easy ordering.
 
-![PCB front](img/pcb_front.png)  [![PCBWay logo](img/pcbway-logo-color.png)](https://www.pcbway.com/) ![PCB front](img/pcb_back.png)
+![PCB front](img/pcb_front.png)  [![PCBWay logo](img/pcbway-logo-color.png)](https://www.pcbway.com/) ![PCB back](img/pcb_back.png)
+
+[![PCB front](img/photo_front.jpg)](/img/PCBWay/7.jpg)  [![PCBWay logo](img/photo_both.jpg)](/img/PCBWay/6.jpg) [![PCB back](img/photo_back.jpg)](/img/PCBWay/8.jpg)
+
+For more pictures of the PCB and/or project see [the project page](https://www.pcbway.com/project/shareproject/Temperature_display_f0e459fd.html) or the [/img/PCBWay](/img/PCBWay/) directory. I would like to thank PCBWay again 🙏 Shipping was incredibly quick 🛫🛬 and the PCB is perfectly finished 👌
 
 In a next iteration I'm hoping to integrate the GXHT30 on the shield, but being pretty new to PCB design this first iteration uses a module.
 
