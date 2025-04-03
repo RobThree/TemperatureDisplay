@@ -97,7 +97,7 @@ The display will show the temperature in °C or Fahrenheit (see `include/config.
 }
 ```
 
-These values are also only update every time the sensor is read (again: see `UPDATEINTERVAL`). There is also a `/reset` endpoint ([`PUT`]) that will reboot the device.
+These values are also only updated every time the sensor is read (again: see `UPDATEINTERVAL`). There is also a `/reset` endpoint ([`PUT`]) that will reboot the device.
 
 ## Attribution
 
