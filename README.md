@@ -1,8 +1,8 @@
-# ![Logo](img/logo.png) Temperature Display
+# ![Logo](data/favicon.svg) Temperature Display
 
 Uses an Wemos D1 mini with a GXHT30 I²C temperature & humidity sensor and a SSD1306 I²C 0.96" OLED display.
 
-This project supports OTA updates, uses the WiFi manager to configure the WiFi and provides a REST API to get the temperature and humidity as JSON. The readings (and display) are updated every 2 seconds and also output to serial.
+This project supports OTA updates, uses the WiFi manager to configure the WiFi and provides a REST API to get the temperature and humidity as JSON. The readings (and display) are updated every 2 seconds (by default, configurable) and also output to serial.
 
 ![Example](img/example.jpg)
 
@@ -63,7 +63,7 @@ This is a PlatformIO project. I'm sure someone will help convert this to an Ardu
 ### How to get started
 
 1. Open this folder in [PlatformIO for VSCode](https://platformio.org/platformio-ide)
-2. Copy [`include/example_config.h`](include/example_config.h) to `include/config.h` and adjust the **devicename** and OTA update password
+2. Copy [`include/example_config.h`](include/example_config.h) to `include/config.h` and change the OTA update password and **devicename** (this one is optional)
 3. Copy [`example_env_secrets.ini`](example_env_secrets.ini) to `env_secrets.ini` and set the same password for the `--auth` option
 4. ⚠️ Make sure your [`platformio.ini`](platformio.ini) file has `default_envs` set to `d1_mini_serial`
 5. Connect your USB cable to your device and the Wemos D1 mini
@@ -74,7 +74,7 @@ This is a PlatformIO project. I'm sure someone will help convert this to an Ardu
 
 ### Once it's up and running
 
-The display will show the temperature in °C or Fahrenheit (see `include/config.h`) and the humidity in %RH (Relative Humidity). If your sensor is way off you can fix this by setting `TEMPERATUREOFFSET` and/or `HUMIDITYOFFSET` in `include/config.h` and updating the device. The temperature and humidity will also be output to the serial port every time the sensor is read (see `UPDATEINTERVAL`) and when you use the `/read` endpoint of the REST API (e.g. `http://<deviceip>/read` [`GET`]) you'll get the readings as json:
+The display will show the temperature in °C or Fahrenheit (see `include/config.h`) and the humidity in %RH (Relative Humidity). If your sensor is way off you can fix this by setting `TEMPERATUREOFFSET` and/or `HUMIDITYOFFSET` in `include/config.h` and updating the device or, much easier, by using the web UI. The temperature and humidity will also be output to the serial port every time the sensor is read (see `UPDATEINTERVAL`) and when you use the `/read` endpoint of the REST API (e.g. `http://<deviceip>/read` [`GET`]) you'll get the readings as json:
 
 ```json
 {
@@ -99,13 +99,15 @@ The display will show the temperature in °C or Fahrenheit (see `include/config.
 }
 ```
 
-These values are also only updated every time the sensor is read (again: see `UPDATEINTERVAL`). There is also a `/reset` endpoint ([`PUT`]) that will reboot the device.
+These values are only updated every time the sensor is read (again: see `UPDATEINTERVAL`). There is also a `/reset` endpoint ([`PUT`]) that will reboot the device.
 
-Finally, the device also offers a user-friendly UI at the `/` endpoint (e.g. `http://<deivce-ip-here>/`) which updates every 10 seconds:
+Finally, the device also offers a user-friendly UI at the `/` endpoint (e.g. `http://<deivce-ip-here>/`) which updates every 5 seconds:
 
 ![Screenshot](/img/screenshot.png)
+
+You can find the settings at `http://<deivce-ip-here>/settings` or by clicking the cog in the top right corner of the home screen. The settings screen allows you to adjust some values. Once your changed settings have been saved you can go back home by clicking the 'home' icon in the top right corner.
 
 ## Attribution
 
 * PCB design based based on [Jérôme Labidurie](https://github.com/jerome-labidurie)'s [Wemos D1 mini Shield template for KiCad](https://github.com/jerome-labidurie/d1_mini_kicad)
-* [Logo by Freepik](https://www.freepik.com/icon/thermometer_8052191)
+* Logo from [SVG Repo](https://www.svgrepo.com/svg/179515/thermometer-temperature) (CC0 License)
