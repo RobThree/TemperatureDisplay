@@ -93,7 +93,9 @@ The display will show the temperature in °C or Fahrenheit (see `include/config.
   "wifi": {
     "rssi": -48
   },
-  "lastupdate": "1.62 seconds ago"
+  "lastupdate": "1.62 seconds ago",
+  "display": "c",
+  "devicename": "MyDevice"
 }
 ```
 

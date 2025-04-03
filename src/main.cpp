@@ -5,6 +5,7 @@
 #include <ArduinoOTA.h>
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WebServer.h>
+#include <LittleFS.h>
 #include <WiFiManager.h>
 #include <Wire.h>
 #include <config.h>
@@ -89,6 +90,8 @@ void setup() {
         snprintf(lastUpdateStr, sizeof(lastUpdateStr), "%.2f seconds ago",
                  (millis() - previousMillis) / 1000.0);
         root["lastupdate"] = lastUpdateStr;
+        root["display"] = SHOWFAHRENHEIT ? "f" : "c";
+        root["devicename"] = DEVICENAME;
 
         String response;
         serializeJson(root, response); // Convert JSON object to string
@@ -99,6 +102,16 @@ void setup() {
     server.on("/reset", HTTP_PUT, []() {
         server.send(200, "text/html", "reset");
         restart("Restarting");
+    });
+
+    server.on("/", HTTP_GET, []() {
+        File file = LittleFS.open("/index.html", "r");
+        if (!file) {
+            server.send(404, "text/plain", "File not found");
+            return;
+        }
+        server.streamFile(file, "text/html");
+        file.close();
     });
 
     server.onNotFound([]() { server.send(404, "text/plain", "File not found"); });
@@ -132,6 +145,10 @@ void setup() {
 
     setStatus("Starting OTA server");
     ArduinoOTA.begin();
+
+    if (!LittleFS.begin()) {
+        setStatus("Failed to mount filesystem");
+    }
 
     setStatus(WiFi.localIP().toString());
     delay(2000);
