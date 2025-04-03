@@ -101,6 +101,10 @@ The display will show the temperature in °C or Fahrenheit (see `include/config.
 
 These values are also only updated every time the sensor is read (again: see `UPDATEINTERVAL`). There is also a `/reset` endpoint ([`PUT`]) that will reboot the device.
 
+Finally, the device also offers a user-friendly UI at the `/` endpoint (e.g. `http://<deivce-ip-here>/`) which updates every 10 seconds:
+
+![Screenshot](/img/screenshot.png)
+
 ## Attribution
 
 * PCB design based based on [Jérôme Labidurie](https://github.com/jerome-labidurie)'s [Wemos D1 mini Shield template for KiCad](https://github.com/jerome-labidurie/d1_mini_kicad)
