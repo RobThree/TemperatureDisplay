@@ -75,21 +75,21 @@ The display will show the temperature in °C or Fahrenheit (see `include/config.
 ```json
 {
   "celsius": {
-    "temperature": 23.57,
+    "temperature": 22.81,
     "offset": -5
   },
   "fahrenheit": {
-    "temperature": 74.426,
-    "offset": 23
+    "temperature": 73.058,
+    "offset": -9
   },
   "humidity": {
-    "relative_perc": 32.89,
+    "relative_perc": 31.29,
     "relative_perc_offset": 8
   },
   "wifi": {
-    "rssi": -46
+    "rssi": -48
   },
-  "lastupdate": "0.12 seconds ago"
+  "lastupdate": "1.62 seconds ago"
 }
 ```
 

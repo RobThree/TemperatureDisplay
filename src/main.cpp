@@ -36,7 +36,9 @@ void restart(const String &status) {
     ESP.restart();
 }
 
-float toFahrenheit(float celsius) { return (celsius * 9.0 / 5.0) + 32.0; }
+float factorCtoF = 9.0 / 5.0;
+float toFahrenheit(float celsius) { return (celsius * factorCtoF) + 32.0; }
+float offsetToFahrenheit(float celsius) { return celsius * factorCtoF; }
 
 void setup() {
     Serial.begin(SERIAL_BAUDRATE);
@@ -76,7 +78,7 @@ void setup() {
         celsiusnode["offset"] = TEMPERATUREOFFSET;
         JsonObject fahrenheitnode = root["fahrenheit"].to<JsonObject>();
         fahrenheitnode["temperature"] = toFahrenheit(temp);
-        fahrenheitnode["offset"] = toFahrenheit(TEMPERATUREOFFSET);
+        fahrenheitnode["offset"] = offsetToFahrenheit(TEMPERATUREOFFSET);
         JsonObject humiditynode = root["humidity"].to<JsonObject>();
         humiditynode["relative_perc"] = humidity;
         humiditynode["relative_perc_offset"] = HUMIDITYOFFSET;
