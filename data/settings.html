@@ -54,52 +54,16 @@
         </form>
     </div>
 
+    <script src="/js"></script>
     <script>
-        async function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            notification.innerHTML = message;
-            notification.className = `notification ${type}`;
-            notification.style.display = 'block';
-
-            setTimeout(() => { notification.style.display = 'none'; }, 10000);
-        }
-
-        async function loadSettings() {
-            try {
-                const response = await fetch('/read');
-                const settings = await response.json();
-
-                document.getElementById('devicename').value = settings.devicename;
-                document.getElementById('updateinterval').value = settings.updateinterval;
-                document.getElementById('tempoffset').value = settings.celsius.offset;
-                document.getElementById('humidityoffset').value = settings.humidity.relative_perc_offset;
-                document.getElementById('showfahrenheit').checked = settings.display === 'f';
-            } catch (error) {
-                console.error('Error loading settings:', error);
-            }
-        }
-
-        document.getElementById('configForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            try {
-                const response = await fetch('/settings', { method: 'POST', body: new FormData(event.target) });
-                const data = await response.json();
-
-                if (data.status === "success") {
-                    showNotification("Settings saved successfully!", "success");
-                } else if (data.status === "error" && data.errors.length > 0) {
-                    showNotification("Errors: <ul><li>" + data.errors.join("</li><li>") + "</li></ul>", "error");
-                } else {
-                    showNotification("Unexpected response from server", "error");
-                }
-            } catch (error) {
-                showNotification("Failed to save settings: " + error.message, "error");
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('configForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                await saveSettings(new FormData(event.target));
+            });
+            document.getElementById('resetbutton').addEventListener('click', loadSettings);
+            loadSettings();
         });
-
-        document.getElementById('resetbutton').addEventListener('click', loadSettings);
-        document.addEventListener('DOMContentLoaded', loadSettings);
     </script>
 </body>
 </html>

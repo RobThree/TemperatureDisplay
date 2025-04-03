@@ -20,7 +20,7 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 
 float temp;
 float humidity;
-unsigned long previousMillis = 0; // Store the last time the display was updated
+unsigned long previousMillis = 0; // Store the last time a measurement was taken
 const char *const SETTINGS_FILENAME = "/settings.bin";
 
 struct Settings {
@@ -76,12 +76,13 @@ bool saveSettings(const Settings &newsettings) {
     return bytesWritten == sizeof(Settings);
 }
 
-void serveFile(const char *path, const char *contentType = "text/html") {
+void serveFile(const char *path, const char *contentType = "text/html", int cacheTTL = 300) {
     File file = LittleFS.open(path, "r");
     if (!file) {
         server.send(404, "text/plain", "File not found");
         return;
     }
+    server.sendHeader("Cache-Control", "max-age=" + String(cacheTTL));
     server.streamFile(file, contentType);
     file.close();
 }
@@ -102,7 +103,7 @@ void setup() {
 
     display.clearDisplay();
     display.setRotation(2);
-    display.setTextSize(2); // Text size
+    display.setTextSize(2);
     display.setTextColor(SSD1306_WHITE);
 
     if (!LittleFS.begin()) {
@@ -166,7 +167,8 @@ void setup() {
 
     server.on("/", HTTP_GET, []() { serveFile("/index.html"); });
     server.on("/css", HTTP_GET, []() { serveFile("/main.css", "text/css"); });
-    server.on("/favicon.ico", HTTP_GET, []() { serveFile("/favicon.svg", "image/svg+xml"); });
+    server.on("/js", HTTP_GET, []() { serveFile("/app.js", "text/javascript"); });
+    server.on("/favicon.ico", HTTP_GET, []() { serveFile("/favicon.svg", "image/svg+xml", 60 * 60 * 24); });
     server.on("/settings", HTTP_GET, []() { serveFile("/settings.html"); });
     server.on("/settings", HTTP_POST, []() {
         Settings newsettings;
@@ -212,7 +214,7 @@ void setup() {
     server.begin();
 
     ArduinoOTA.setPassword(OTAPASSWORD);
-    ArduinoOTA.setHostname(settings.deviceName); // Set the OTA device hostname
+    ArduinoOTA.setHostname(settings.deviceName);
     ArduinoOTA.onStart([]() {
         String type = (ArduinoOTA.getCommand() == U_FLASH) ? "sketch" : "filesystem";
         setStatus("Start updating " + type);
@@ -264,7 +266,7 @@ void loop() {
 
     unsigned long currentMillis = millis(); // Get the current time
 
-    // Check if it's time to update the display
+    // Check if it's time to take another measurement
     if (currentMillis - previousMillis >= settings.updateInterval) {
         previousMillis = currentMillis;
         temp = sht31.readTemperature() + settings.tempOffset;
@@ -273,10 +275,8 @@ void loop() {
         Serial.printf("Temperature: %.2f C, %.2f F, humidity: %.2f %%RH\n", temp,
                       toFahrenheit(temp), humidity);
 
-        // Clear display
         display.clearDisplay();
 
-        // Print temperature
         display.setCursor(0, 0);
         display.print("Temp: ");
         display.setCursor(15, 15);
@@ -288,14 +288,12 @@ void loop() {
             display.print(" C");
         }
 
-        // Print humidity
         display.setCursor(0, 30);
         display.print("Humidity: ");
         display.setCursor(15, 45);
         display.print(humidity);
         display.print(" %");
 
-        // Update display
         display.display();
     }
 }
