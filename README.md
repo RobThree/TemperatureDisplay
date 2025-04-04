@@ -59,6 +59,7 @@ Connect the GXHT30 and SSD1306 to the Wemos D1 mini's `3v3` pin, connect the gro
 ### Tips on assembly:
 
 * ⚠️ On some displays [there's a capacitor that can get quite close to the pins of this board](/img/pin.jpg). You might want to take a sidecutter and snip of a piece of the pin or use some kapton tape or some other means to isolate the pin. Make sure you check BOTH left and right side of the display!
+* Solder the pinheaders/sockets **first**, and only **then** solder the display / temperature sensor. If you solder the display first you'll have a hard time reaching the pins connecting the board to the Wemos D1 mini
 * When soldering the display to the board, [use a female header as a spacer](/img/spacer.jpg) for the perfect alignment.
 * You don't _need_ to use male/female headers to connect the Wemos D1 mini to the PCB, you can use pins-only to make the device more compact. Just make sure you keep enough clearance!
 * Don't forget to emjoy the peel-feel when removing the protective peel from the OLED 🤤
