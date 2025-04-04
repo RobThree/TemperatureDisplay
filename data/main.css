@@ -91,6 +91,10 @@ button:hover {
     background-color: #0069d9;
 }
 
+button.secondary:hover {
+    background-color: #5a6268;
+}
+
 input:invalid + .error {
     display: block;
 }
