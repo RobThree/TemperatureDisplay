@@ -18,7 +18,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // -1 means no
 ESP8266WebServer server(HTTP_PORT);
 ESP8266HTTPUpdateServer httpUpdateServer;
 
-float temp;
+float temperature;
 float humidity;
 unsigned long previousMillis = 0; // Store the last time a measurement was taken
 const char *const SETTINGS_FILENAME = "/settings.bin";
@@ -135,10 +135,10 @@ void setup() {
     server.on("/read", HTTP_GET, []() {
         JsonDocument root;
         JsonObject celsiusnode = root["celsius"].to<JsonObject>();
-        celsiusnode["temperature"] = temp;
+        celsiusnode["temperature"] = temperature;
         celsiusnode["offset"] = settings.tempOffset;
         JsonObject fahrenheitnode = root["fahrenheit"].to<JsonObject>();
-        fahrenheitnode["temperature"] = toFahrenheit(temp);
+        fahrenheitnode["temperature"] = toFahrenheit(temperature);
         fahrenheitnode["offset"] = offsetToFahrenheit(settings.tempOffset);
         JsonObject humiditynode = root["humidity"].to<JsonObject>();
         humiditynode["relative_perc"] = humidity;
@@ -269,11 +269,11 @@ void loop() {
     // Check if it's time to take another measurement
     if (currentMillis - previousMillis >= settings.updateInterval) {
         previousMillis = currentMillis;
-        temp = sht31.readTemperature() + settings.tempOffset;
+        temperature = sht31.readTemperature() + settings.tempOffset;
         humidity = constrain(sht31.readHumidity() + settings.humidityOffset, 0, 100);
 
-        Serial.printf("Temperature: %.2f C, %.2f F, humidity: %.2f %%RH\n", temp,
-                      toFahrenheit(temp), humidity);
+        Serial.printf("Temperature: %.2f C, %.2f F, humidity: %.2f %%RH\n", temperature,
+                      toFahrenheit(temperature), humidity);
 
         display.clearDisplay();
 
@@ -281,10 +281,10 @@ void loop() {
         display.print("Temp: ");
         display.setCursor(15, 15);
         if (settings.showFahrenheit) {
-            display.print(toFahrenheit(temp));
+            display.print(toFahrenheit(temperature));
             display.print(" F");
         } else {
-            display.print(temp);
+            display.print(temperature);
             display.print(" C");
         }
 
