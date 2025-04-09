@@ -17,6 +17,8 @@ void Display::begin() {
     _display.setRotation(2);
     _display.setTextSize(2);
     _display.setTextColor(SSD1306_WHITE);
+
+    _display.display();
 }
 
 void Display::showMeasurements(SensorData &data, bool showFahrenheit) {
