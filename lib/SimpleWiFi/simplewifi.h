@@ -13,8 +13,8 @@ class SimpleWiFi {
     String localIP();
 
   private:
-    Logger &logger; // Reference to the logger
-    WiFiManager wifiManager;
+    Logger &_logger; // Reference to the logger
+    WiFiManager _wifiManager;
 };
 
 #endif // SIMPLEWIFI_H

@@ -7,7 +7,7 @@
 
 class Settings {
   public:
-    Settings(Logger &log, String filename = SETTINGS_FILENAME) : logger(log), filename(filename) {}
+    Settings(Logger &log, String filename = SETTINGS_FILENAME) : _logger(log), _filename(filename) {}
     // SimpleSettings(Logger &log, const char *filename = SETTINGS_FILENAME)
     //     : SimpleSettings(log, String(filename)) {}
     void begin();
@@ -16,8 +16,8 @@ class Settings {
     static const char *SETTINGS_FILENAME;
 
   private:
-    Logger &logger; // Reference to the logger
-    String filename;
+    Logger &_logger; // Reference to the logger
+    String _filename;
 };
 
 #endif // SETTINGS_H

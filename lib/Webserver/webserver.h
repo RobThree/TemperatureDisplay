@@ -9,9 +9,9 @@
 
 class Webserver {
   public:
-    Webserver(Logger &log, FS fs, int port = 80) : logger(log), fs(fs), server(port) {
-        httpUpdateServer.setup(&server);
-        server.onNotFound([this]() { server.send(404, "text/plain", "File not found"); });
+    Webserver(Logger &log, FS fs, int port = 80) : _logger(log), _fs(fs), _server(port) {
+        _httpUpdateServer.setup(&_server);
+        _server.onNotFound([this]() { _server.send(404, "text/plain", "File not found"); });
     };
     void useDefaultEndpoints();
     void begin();
@@ -19,18 +19,20 @@ class Webserver {
     void sendJson(const JsonDocument &json, int httpCode = 200);
     const String &arg(const String &name) const;
     void serveStatic(const char *, const char *path, const char *cacheheader = "max-age=300");
-    void on(const String &uri, ESP8266WebServer::THandlerFunction fn) { server.on(uri, fn); }
-    void on(const String &uri, HTTPMethod method, ESP8266WebServer::THandlerFunction fn) { server.on(uri, method, fn); }
+    void on(const String &uri, ESP8266WebServer::THandlerFunction fn) { _server.on(uri, fn); }
+    void on(const String &uri, HTTPMethod method, ESP8266WebServer::THandlerFunction fn) {
+        _server.on(uri, method, fn);
+    }
     void on(const String &uri, HTTPMethod method, ESP8266WebServer::THandlerFunction fn,
             ESP8266WebServer::THandlerFunction ufn) {
-        server.on(uri, method, fn, ufn);
+        _server.on(uri, method, fn, ufn);
     }
 
   private:
-    Logger &logger; // Reference to the logger
-    FS fs;
-    ESP8266WebServer server;
-    ESP8266HTTPUpdateServer httpUpdateServer;
+    Logger &_logger; // Reference to the logger
+    FS _fs;
+    ESP8266WebServer _server;
+    ESP8266HTTPUpdateServer _httpUpdateServer;
 };
 
 #endif // WEBSERVER_H

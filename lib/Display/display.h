@@ -13,10 +13,10 @@ class Display {
     void showMeasurements(SensorData &data, bool showFahrenheit);
 
   private:
-    Logger &logger; // Reference to the logger
-    uint8_t width;
-    uint8_t height;
-    Adafruit_SSD1306 display;
+    Logger &_logger; // Reference to the logger
+    uint8_t _width;
+    uint8_t _height;
+    Adafruit_SSD1306 _display;
 };
 
 #endif // DISPLAY_H

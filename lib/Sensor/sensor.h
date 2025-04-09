@@ -12,8 +12,8 @@ class Sensor {
     SensorData readData(float tempOffset, float humidityOffset);
 
   private:
-    Logger &logger; // Reference to the logger
-    Adafruit_SHT31 sht31 = Adafruit_SHT31();
+    Logger &_logger; // Reference to the logger
+    Adafruit_SHT31 _sht31 = Adafruit_SHT31();
 };
 
 #endif // SENSOR_H

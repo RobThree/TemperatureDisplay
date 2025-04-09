@@ -11,7 +11,7 @@ class OTA {
     void handle();
 
   private:
-    Logger &logger; // Reference to the logger
+    Logger &_logger; // Reference to the logger
 };
 
 #endif // OTA_H

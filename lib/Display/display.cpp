@@ -2,40 +2,42 @@
 #include "sensordata.h"
 #include <Wire.h>
 
-Display::Display(Logger &log, uint8_t w, uint8_t h) : logger(log), width(w), height(h), display(w, h, &Wire, -1) {}
+Display::Display(Logger &log, uint8_t w, uint8_t h) : _logger(log), _width(w), _height(h), _display(w, h, &Wire, -1) {}
 
 void Display::begin() {
     Wire.begin();
 
     // Initialize SSD1306 display
-    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // 0x3C is the I2C address of SSD1306
-        logger.error("SSD1306 allocation failed");
+    if (!_display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // 0x3C is the I2C address of SSD1306
+        _logger.error("SSD1306 allocation failed");
         ESP.restart();
     }
 
-    display.clearDisplay();
-    display.setRotation(2);
-    display.setTextSize(2);
-    display.setTextColor(SSD1306_WHITE);
+    _display.clearDisplay();
+    _display.setRotation(2);
+    _display.setTextSize(2);
+    _display.setTextColor(SSD1306_WHITE);
 }
 
 void Display::showMeasurements(SensorData &data, bool showFahrenheit) {
-    display.clearDisplay();
+    _display.clearDisplay();
 
-    display.setCursor(0, 0);
-    display.print("Temp: ");
-    display.print(data.getTemperatureDisplay(showFahrenheit));
+    _display.setCursor(0, 0);
+    _display.print("Temp: ");
+    _display.setCursor(15, 15);
+    _display.print(data.getTemperatureDisplay(showFahrenheit));
 
-    display.setCursor(0, 16);
-    display.print("Humidity: ");
-    display.print(data.getHumidityDisplay());
+    _display.setCursor(0, 30);
+    _display.print("Humidity: ");
+    _display.setCursor(15, 45);
+    _display.print(data.getHumidityDisplay());
 
-    display.display();
+    _display.display();
 }
 
 void Display::setStatus(const String &status) {
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.print(status);
-    display.display();
+    _display.clearDisplay();
+    _display.setCursor(0, 0);
+    _display.print(status);
+    _display.display();
 }

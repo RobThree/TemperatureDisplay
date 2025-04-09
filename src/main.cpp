@@ -29,6 +29,7 @@ void setStatus(Logger::Level level, const String &status);
 void setup() {
     Serial.begin(SERIAL_BAUDRATE);
 
+    display.begin();
     settings.begin();
 
     settings.loadSettings(appsettings, [](AppSettings &settings) {
