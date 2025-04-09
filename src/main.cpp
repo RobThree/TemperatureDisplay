@@ -24,7 +24,6 @@ unsigned long previousMillis = 0; // Store the last time a measurement was taken
 
 void handleReading();
 void handleSettings();
-void setStatus(Logger::Level level, const String &status);
 
 void setup() {
     Serial.begin(SERIAL_BAUDRATE);
@@ -56,7 +55,7 @@ void setup() {
 
     ota.begin(appsettings.deviceName, OTAPASSWORD);
 
-    setStatus(Logger::INFO, wifi.localIP());
+    display.setStatus(wifi.localIP());
     delay(2000);
 }
 
@@ -135,14 +134,8 @@ void handleSettings() {
 
     if (errors.size() == 0 && settings.saveSettings(newsettings, appsettings)) {
         response["status"] = "success";
-        setStatus(Logger::INFO, "Settings saved");
     } else {
         response["status"] = "error";
     }
     server.sendJson(response);
-}
-
-void setStatus(Logger::Level level, const String &status) {
-    logger.log(level, status);
-    display.setStatus(status);
 }

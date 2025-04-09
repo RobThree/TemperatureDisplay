@@ -32,5 +32,11 @@ bool Settings::saveSettings(const AppSettings &newsettings, AppSettings &setting
     size_t bytesWritten = file.write((uint8_t *)&newsettings, sizeof(AppSettings));
     file.close();
     settings = newsettings;
-    return bytesWritten == sizeof(AppSettings);
+    if (bytesWritten == sizeof(AppSettings)) {
+        _logger.info("Settings saved successfully");
+        return true;
+    } else {
+        _logger.error("Failed to write settings");
+    }
+    return false; // Failed to write settings
 }
