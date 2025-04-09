@@ -17,10 +17,10 @@ struct SensorData {
 
     SensorData(float temp_c = NAN, float offset_c = 0, float hum = NAN, float hum_offset = 0)
         : temperature_c(temp_c), temperature_f(toFahrenheit(temp_c)), offset_c(offset_c),
-          offset_f(offsetToFahrenheit(temp_c)), humidity(hum), humidity_offset(hum_offset) {}
+          offset_f(offsetToFahrenheit(offset_c)), humidity(hum), humidity_offset(hum_offset) {}
 
     float getTemperatureDisplayValue(bool showFahrenheit = false) const {
-        return showFahrenheit ? temperature_f + offset_f : temperature_c + offset_f;
+        return showFahrenheit ? temperature_f + offset_f : temperature_c + offset_c;
     }
     float getHumidityDisplayValue() const { return humidity + humidity_offset; }
 
