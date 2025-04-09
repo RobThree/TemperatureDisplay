@@ -45,7 +45,7 @@ void setup() {
 
     wifi.onStatus(setStatus);
     wifi.begin(PORTALTIMEOUT, WIFICONNECTTIMEOUT, WIFICONNECTRETRIES, appsettings.deviceName);
-    
+
     sensor.begin();
 
     server.serveStatic("/", "/index.html");
@@ -149,6 +149,4 @@ void handleSettings() {
     server.sendJson(response);
 }
 
-void setStatus(const char *status) {
-    display.setStatus(status);
-}
+void setStatus(const char *status) { display.setStatus(status); }

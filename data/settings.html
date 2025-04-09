@@ -1,123 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Device Configuration</title>
-    <link rel="stylesheet" href="/css" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-  </head>
-  <body>
-    <div id="loadingOverlay" class="overlay">
-      <div class="spinner"></div>
-    </div>
-
-    <a href="/">
-      <svg
-        class="home-icon"
-        version="1.2"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        width="24"
-        height="24"
-      >
-        <path
-          d="m21 13v10h-6v-6h-6v6h-6v-10h-3l12-12 12 12zm-1-5.9v-5.1h-3v2.1z"
-        />
-      </svg>
-    </a>
-    <div class="container">
-      <h1>Device Configuration</h1>
-
-      <div id="notification" class="notification"></div>
-      <form id="configForm">
-        <div class="form-group">
-          <label for="updateinterval">Measurement update Interval (ms)</label>
-          <input
-            type="number"
-            id="updateinterval"
-            name="updateinterval"
-            required
-            value=""
-          />
-          <div class="help-text">
-            Note that this is <strong>not</strong> the Web UI update interval!
-          </div>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Device Configuration</title>
+        <link rel="stylesheet" href="/css" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    </head>
+    <body>
+        <div id="loadingOverlay" class="overlay">
+            <div class="spinner"></div>
         </div>
 
-        <div class="form-group">
-          <div class="checkbox-label">
-            <input
-              type="checkbox"
-              id="showfahrenheit"
-              name="showfahrenheit"
-              value="f"
-            />
-            <label for="showfahrenheit">Show Temperature in Fahrenheit</label>
-          </div>
-          <div class="help-text">
-            When unchecked, temperature will be shown in Celsius
-          </div>
+        <a href="/">
+            <!-- prettier-ignore -->
+            <svg class="home-icon" version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <path d="m21 13v10h-6v-6h-6v6h-6v-10h-3l12-12 12 12zm-1-5.9v-5.1h-3v2.1z" />
+            </svg>
+        </a>
+        <div class="container">
+            <h1>Device Configuration</h1>
+
+            <div id="notification" class="notification"></div>
+            <form id="configForm">
+                <div class="form-group">
+                    <label for="updateinterval">Measurement update Interval (ms)</label>
+                    <input type="number" id="updateinterval" name="updateinterval" required value="" />
+                    <div class="help-text">
+                        Note that this is
+                        <strong>not</strong>
+                        the Web UI update interval!
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-label">
+                        <input type="checkbox" id="showfahrenheit" name="showfahrenheit" value="f" />
+                        <label for="showfahrenheit">Show Temperature in Fahrenheit</label>
+                    </div>
+                    <div class="help-text">When unchecked, temperature will be shown in Celsius</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tempoffset">Temperature Offset</label>
+                    <input type="number" id="tempoffset" name="tempoffset" required value="" step="0.1" />
+                    <div class="help-text">In Celsius, regardless of above settings</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="humidityoffset">Humidity Offset</label>
+                    <input type="number" id="humidityoffset" name="humidityoffset" required step="0.1" />
+                </div>
+
+                <div class="form-group">
+                    <label for="devicename">Device Name</label>
+                    <input type="text" id="devicename" name="devicename" maxlength="32" required />
+                </div>
+
+                <div class="footer">
+                    <button id="resetbutton" class="secondary" type="button">Reset</button>
+                    <button type="submit">Save Configuration</button>
+                </div>
+            </form>
         </div>
 
-        <div class="form-group">
-          <label for="tempoffset">Temperature Offset</label>
-          <input
-            type="number"
-            id="tempoffset"
-            name="tempoffset"
-            required
-            value=""
-            step="0.1"
-          />
-          <div class="help-text">In Celsius, regardless of above settings</div>
-        </div>
-
-        <div class="form-group">
-          <label for="humidityoffset">Humidity Offset</label>
-          <input
-            type="number"
-            id="humidityoffset"
-            name="humidityoffset"
-            required
-            step="0.1"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="devicename">Device Name</label>
-          <input
-            type="text"
-            id="devicename"
-            name="devicename"
-            maxlength="32"
-            required
-          />
-        </div>
-
-        <div class="footer">
-          <button id="resetbutton" class="secondary" type="button">
-            Reset
-          </button>
-          <button type="submit">Save Configuration</button>
-        </div>
-      </form>
-    </div>
-
-    <script src="/js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        document
-          .getElementById("configForm")
-          .addEventListener("submit", async (event) => {
-            event.preventDefault();
-            await saveSettings(new FormData(event.target));
-          });
-        document
-          .getElementById("resetbutton")
-          .addEventListener("click", loadSettings);
-        loadSettings();
-      });
-    </script>
-  </body>
+        <script src="/js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('configForm').addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    await saveSettings(new FormData(event.target));
+                });
+                document.getElementById('resetbutton').addEventListener('click', loadSettings);
+                loadSettings();
+            });
+        </script>
+    </body>
 </html>

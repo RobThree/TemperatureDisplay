@@ -8,7 +8,8 @@
 
 class Settings {
   public:
-    Settings(Logger &log, String filename = SETTINGS_FILENAME) : _logger(log), _filename(filename), _statuscallback(emptyStatus) {}
+    Settings(Logger &log, String filename = SETTINGS_FILENAME)
+        : _logger(log), _filename(filename), _statuscallback(emptyStatus) {}
     // SimpleSettings(Logger &log, const char *filename = SETTINGS_FILENAME)
     //     : SimpleSettings(log, String(filename)) {}
     void begin();
