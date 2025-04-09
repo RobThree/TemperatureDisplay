@@ -11,6 +11,7 @@
 class Webserver {
   public:
     Webserver(Logger &log, FS fs, int port = 80) : _logger(log), _fs(fs), _server(port), _statuscallback(emptyStatus) {
+        _fs.begin();
         _httpUpdateServer.setup(&_server);
         _server.onNotFound([this]() { _server.send(404, "text/plain", "File not found"); });
     };

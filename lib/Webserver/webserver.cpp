@@ -15,7 +15,6 @@ void Webserver::serveStatic(const char *uri, const char *path, const char *cache
 }
 
 void Webserver::begin() {
-    _fs.begin();
     _server.begin();
     _logger.info("HTTP server started");
 }
