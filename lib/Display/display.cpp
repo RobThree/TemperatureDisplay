@@ -1,4 +1,5 @@
 #include "display.h"
+#include "sensordata.h"
 #include <Wire.h>
 
 Display::Display(Logger &log, uint8_t w, uint8_t h)
@@ -19,16 +20,17 @@ void Display::begin() {
     display.setTextColor(SSD1306_WHITE);
 }
 
-void Display::showMeasurements(float temperature, bool isFahrenheit, float humidity) {
+void Display::showMeasurements(SensorData &data, bool showFahrenheit) {
     display.clearDisplay();
+    
     display.setCursor(0, 0);
     display.print("Temp: ");
-    display.print(temperature);
-    display.print(isFahrenheit ? " F" : " C");
+    display.print(data.getTemperatureDisplay(showFahrenheit));
+
     display.setCursor(0, 16);
     display.print("Humidity: ");
-    display.print(humidity);
-    display.print(" %");
+    display.print(data.getHumidityDisplay());
+
     display.display();
 }
 

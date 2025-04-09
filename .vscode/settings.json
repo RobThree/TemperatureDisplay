@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.module": "php",
+        "*.php": "php",
+        "cmath": "cpp"
+    }
+}
