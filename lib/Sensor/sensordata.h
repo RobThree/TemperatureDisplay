@@ -12,9 +12,7 @@ struct SensorData {
     float humidity_offset;
 
     static constexpr float factorCtoF = 9.0 / 5.0;
-    static float toFahrenheit(float celsius) {
-        return std::isnan(celsius) ? NAN : (celsius * factorCtoF) + 32.0;
-    }
+    static float toFahrenheit(float celsius) { return std::isnan(celsius) ? NAN : (celsius * factorCtoF) + 32.0; }
     static float offsetToFahrenheit(float celsius) { return celsius * factorCtoF; }
 
     SensorData(float temp_c = NAN, float offset_c = 0, float hum = NAN, float hum_offset = 0)

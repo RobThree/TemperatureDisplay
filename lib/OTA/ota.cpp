@@ -1,8 +1,7 @@
-#include <ArduinoOTA.h>
 #include "ota.h"
+#include <ArduinoOTA.h>
 
-OTA::OTA(Logger &log)
-    : logger(log) {}
+OTA::OTA(Logger &log) : logger(log) {}
 
 void OTA::begin(const char *const hostname, const char *const password) {
     ArduinoOTA.setPassword(hostname);
@@ -11,9 +10,7 @@ void OTA::begin(const char *const hostname, const char *const password) {
         String type = (ArduinoOTA.getCommand() == U_FLASH) ? "sketch" : "filesystem";
         logger.info(("Start updating " + type).c_str());
     });
-    ArduinoOTA.onEnd([this]() {
-        logger.info("Update Complete");
-    });
+    ArduinoOTA.onEnd([this]() { logger.info("Update Complete"); });
     ArduinoOTA.onProgress([this](unsigned int progress, unsigned int total) {
         logger.info(("Progress: " + String((progress * 100) / total) + "%").c_str());
     });
@@ -36,6 +33,4 @@ void OTA::begin(const char *const hostname, const char *const password) {
     ArduinoOTA.begin();
 }
 
-void OTA::handle() {
-    ArduinoOTA.handle();
-}
+void OTA::handle() { ArduinoOTA.handle(); }

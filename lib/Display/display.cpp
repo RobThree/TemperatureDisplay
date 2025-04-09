@@ -2,8 +2,7 @@
 #include "sensordata.h"
 #include <Wire.h>
 
-Display::Display(Logger &log, uint8_t w, uint8_t h)
-    : logger(log), width(w), height(h), display(w, h, &Wire, -1) {}  
+Display::Display(Logger &log, uint8_t w, uint8_t h) : logger(log), width(w), height(h), display(w, h, &Wire, -1) {}
 
 void Display::begin() {
     Wire.begin();
@@ -22,7 +21,7 @@ void Display::begin() {
 
 void Display::showMeasurements(SensorData &data, bool showFahrenheit) {
     display.clearDisplay();
-    
+
     display.setCursor(0, 0);
     display.print("Temp: ");
     display.print(data.getTemperatureDisplay(showFahrenheit));

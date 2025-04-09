@@ -1,13 +1,12 @@
 #include "sensor.h"
 
-Sensor::Sensor(Logger &log)
-    : logger(log) {}  
+Sensor::Sensor(Logger &log) : logger(log) {}
 
 void Sensor::begin(uint8_t i2cAddress) {
     if (!sht31.begin(i2cAddress)) {
         logger.error("Couldn't find GXHT30 sensor!");
         ESP.restart();
-    }    
+    }
 }
 
 SensorData Sensor::readData(float tempOffset, float humidityOffset) {

@@ -1,13 +1,11 @@
-#include "appsettings.h"
 #include "settings.h"
+#include "appsettings.h"
 
 const char *Settings::SETTINGS_FILENAME = "/settings.bin";
 
-void Settings::begin() {
-    LittleFS.begin();
-}
+void Settings::begin() { LittleFS.begin(); }
 
-bool Settings::loadSettings(AppSettings &settings, std::function<void(AppSettings&)> getDefaultSettings) {
+bool Settings::loadSettings(AppSettings &settings, std::function<void(AppSettings &)> getDefaultSettings) {
     File file = LittleFS.open(filename, "r");
     if (!file || file.size() < sizeof(AppSettings)) {
         getDefaultSettings(settings);

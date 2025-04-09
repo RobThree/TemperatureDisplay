@@ -1,11 +1,9 @@
 #include "simplewifi.h"
 
-SimpleWiFi::SimpleWiFi(Logger &log)
-    : logger(log) {}  
+SimpleWiFi::SimpleWiFi(Logger &log) : logger(log) {}
 
-void SimpleWiFi::begin(unsigned long portalTimeout, unsigned long wifiConnectTimeout,
-                 unsigned long wifiConnectRetries, const char *apName, 
-                 const char *apPassword) {
+void SimpleWiFi::begin(unsigned long portalTimeout, unsigned long wifiConnectTimeout, unsigned long wifiConnectRetries,
+                       const char *apName, const char *apPassword) {
     logger.info("Starting WiFi");
     wifiManager.setConfigPortalTimeout(portalTimeout);
     wifiManager.setConnectTimeout(wifiConnectTimeout);
@@ -37,6 +35,4 @@ void SimpleWiFi::ensureConnected() {
     }
 }
 
-String SimpleWiFi::localIP() {
-    return WiFi.localIP().toString();
-}
+String SimpleWiFi::localIP() { return WiFi.localIP().toString(); }

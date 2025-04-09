@@ -7,12 +7,11 @@
 
 class Settings {
   public:
-    Settings(Logger &log, String filename = SETTINGS_FILENAME)
-        : logger(log), filename(filename) {}
+    Settings(Logger &log, String filename = SETTINGS_FILENAME) : logger(log), filename(filename) {}
     // SimpleSettings(Logger &log, const char *filename = SETTINGS_FILENAME)
     //     : SimpleSettings(log, String(filename)) {}
     void begin();
-    bool loadSettings(AppSettings &settings, std::function<void(AppSettings&)> getDefaultSettings);
+    bool loadSettings(AppSettings &settings, std::function<void(AppSettings &)> getDefaultSettings);
     bool saveSettings(const AppSettings &newsettings, AppSettings &settings);
     static const char *SETTINGS_FILENAME;
 

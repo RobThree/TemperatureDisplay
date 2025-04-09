@@ -53,8 +53,7 @@ void setup() {
 
     settings.begin();
 
-    settings.loadSettings(
-        appsettings, [](AppSettings &settings) {
+    settings.loadSettings(appsettings, [](AppSettings &settings) {
         settings.updateInterval = UPDATEINTERVAL;
         settings.tempOffset = TEMPERATUREOFFSET;
         settings.humidityOffset = HUMIDITYOFFSET;
@@ -83,8 +82,7 @@ void setup() {
         wifinode["rssi"] = WiFi.RSSI();
 
         char lastUpdateStr[32];
-        snprintf(lastUpdateStr, sizeof(lastUpdateStr), "%.2f seconds ago",
-                 (millis() - previousMillis) / 1000.0);
+        snprintf(lastUpdateStr, sizeof(lastUpdateStr), "%.2f seconds ago", (millis() - previousMillis) / 1000.0);
         root["lastupdate"] = lastUpdateStr;
         root["display"] = appsettings.showFahrenheit ? "f" : "c";
         root["devicename"] = appsettings.deviceName;
@@ -104,8 +102,7 @@ void setup() {
     server.on("/", HTTP_GET, []() { serveFile("/index.html"); });
     server.on("/css", HTTP_GET, []() { serveFile("/main.css", "text/css"); });
     server.on("/js", HTTP_GET, []() { serveFile("/app.js", "text/javascript"); });
-    server.on("/favicon.ico", HTTP_GET,
-              []() { serveFile("/favicon.svg", "image/svg+xml", 60 * 60 * 24); });
+    server.on("/favicon.ico", HTTP_GET, []() { serveFile("/favicon.svg", "image/svg+xml", 60 * 60 * 24); });
     server.on("/settings", HTTP_GET, []() { serveFile("/settings.html"); });
     server.on("/settings", HTTP_POST, []() {
         AppSettings newsettings;
@@ -126,10 +123,8 @@ void setup() {
         if (newsettings.humidityOffset < -50 || newsettings.humidityOffset > 50) {
             errors.add("Humidity offset must be between -50 and 50");
         }
-        strncpy(newsettings.deviceName, server.arg("devicename").c_str(),
-                sizeof(newsettings.deviceName) - 1);
-        newsettings.deviceName[sizeof(newsettings.deviceName) - 1] =
-            '\0'; // Ensure null termination
+        strncpy(newsettings.deviceName, server.arg("devicename").c_str(), sizeof(newsettings.deviceName) - 1);
+        newsettings.deviceName[sizeof(newsettings.deviceName) - 1] = '\0'; // Ensure null termination
         if (strlen(newsettings.deviceName) == 0 || strlen(newsettings.deviceName) > 31) {
             errors.add("Device name must be between 1 and 31 characters");
         }
