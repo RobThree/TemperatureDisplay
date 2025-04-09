@@ -1,20 +1,21 @@
-#include <Adafruit_GFX.h>
 #include <Adafruit_SHT31.h>
-#include <Adafruit_SSD1306.h>
 #include <ArduinoJson.h>
-#include <ArduinoOTA.h>
+#include "display.h"
+#include "ota.h"
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WebServer.h>
 #include <LittleFS.h>
-#include <WiFiManager.h>
-#include <Wire.h>
+#include "simplewifi.h"
 #include <config.h>
 
 // See include/example_config.h for configuration. Make sure you copy it
 // to include/config.h and enter your configuration data there.
 
+Logger logger(Serial);
+OTA ota(logger);
+SimpleWiFi wifi(logger);
+Display display(logger, SCREEN_WIDTH, SCREEN_HEIGHT);
 Adafruit_SHT31 sht31 = Adafruit_SHT31();
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1); // -1 means no reset pin
 ESP8266WebServer server(HTTP_PORT);
 ESP8266HTTPUpdateServer httpUpdateServer;
 
@@ -33,17 +34,13 @@ struct Settings {
 
 Settings settings;
 
-void setStatus(const String &status) {
-    Serial.println(status);
-
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.print(status);
-    display.display();
+void setStatus(Logger::Level level, const String &status) {
+    logger.log(level, status);
+    display.setStatus(status);
 }
 
 void restart(const String &status) {
-    setStatus(status);
+    setStatus(Logger::WARN, status);
     delay(3000);
     ESP.restart();
 }
@@ -93,41 +90,22 @@ float offsetToFahrenheit(float celsius) { return celsius * factorCtoF; }
 
 void setup() {
     Serial.begin(SERIAL_BAUDRATE);
-    Wire.begin();
-
-    // Initialize SSD1306 display
-    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // 0x3C is the I2C address of SSD1306
-        setStatus("SSD1306 allocation failed");
-        ESP.restart();
-    }
-
-    display.clearDisplay();
-    display.setRotation(2);
-    display.setTextSize(2);
-    display.setTextColor(SSD1306_WHITE);
 
     if (!LittleFS.begin()) {
-        setStatus("Failed to mount filesystem");
+        setStatus(Logger::ERROR, "Failed to mount filesystem");
     }
 
     if (loadSettings()) {
-        setStatus("Settings loaded");
+        setStatus(Logger::INFO, "Settings loaded");
     } else {
-        setStatus("Using default settings");
+        setStatus(Logger::INFO, "Using default settings");
     }
 
-    WiFiManager wifiManager;
-    wifiManager.setConfigPortalTimeout(PORTALTIMEOUT);
-    wifiManager.setConnectTimeout(WIFICONNECTTIMEOUT);
-    wifiManager.setConnectRetries(WIFICONNECTRETRIES);
-    wifiManager.setWiFiAutoReconnect(true);
-    if (!wifiManager.autoConnect(settings.deviceName)) {
-        restart("Autconnect failed...");
-    }
+    wifi.begin(PORTALTIMEOUT, WIFICONNECTTIMEOUT, WIFICONNECTRETRIES, settings.deviceName);
 
     // Initialize GXHT30
     if (!sht31.begin(0x44)) { // 0x44 is the I2C address of GXHT30
-        setStatus("Couldn't find GXHT30 sensor!");
+        setStatus(Logger::ERROR, "Couldn't find GXHT30 sensor!");
         ESP.restart();
     }
 
@@ -198,7 +176,7 @@ void setup() {
 
         if (errors.size() == 0 && saveSettings(newsettings)) {
             root["status"] = "success";
-            setStatus("Settings saved");
+            setStatus(Logger::INFO, "Settings saved");
         } else {
             root["status"] = "error";
         }
@@ -213,56 +191,16 @@ void setup() {
     Serial.println("Starting HTTP server");
     server.begin();
 
-    ArduinoOTA.setPassword(OTAPASSWORD);
-    ArduinoOTA.setHostname(settings.deviceName);
-    ArduinoOTA.onStart([]() {
-        String type = (ArduinoOTA.getCommand() == U_FLASH) ? "sketch" : "filesystem";
-        setStatus("Start updating " + type);
-    });
-    ArduinoOTA.onEnd([]() { setStatus("Update Complete"); });
-    ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-        setStatus("Progress: " + String((progress * 100) / total) + "%");
-    });
-    ArduinoOTA.onError([](ota_error_t error) {
-        setStatus("Error: " + String(error));
-        if (error == OTA_AUTH_ERROR)
-            setStatus("Auth Failed");
-        else if (error == OTA_BEGIN_ERROR)
-            setStatus("Begin Failed");
-        else if (error == OTA_CONNECT_ERROR)
-            setStatus("Connect Failed");
-        else if (error == OTA_RECEIVE_ERROR)
-            setStatus("Receive Failed");
-        else if (error == OTA_END_ERROR)
-            setStatus("End Failed");
-    });
+    ota.begin(settings.deviceName, OTAPASSWORD);
 
-    setStatus("Starting OTA server");
-    ArduinoOTA.begin();
-
-    setStatus(WiFi.localIP().toString());
+    setStatus(Logger::INFO, wifi.localIP());
     delay(2000);
 }
 
 void loop() {
     server.handleClient();
-    ArduinoOTA.handle();
-    if ((WiFi.status() != WL_CONNECTED)) {
-        setStatus("WiFi not connected, reconnecting...");
-        WiFi.reconnect();
-        unsigned long start = millis();
-
-        while (WiFi.status() != WL_CONNECTED && millis() - start < 10000) {
-            delay(100);
-        }
-
-        if (WiFi.status() == WL_CONNECTED) {
-            setStatus("WiFi reconnected");
-        } else {
-            setStatus("Failed to reconnect to WiFi. Retrying...");
-            delay(1000);
-        }
-    }
+    ota.handle();
+    wifi.ensureConnected();
 
     unsigned long currentMillis = millis(); // Get the current time
 
@@ -275,25 +213,10 @@ void loop() {
         Serial.printf("Temperature: %.2f C, %.2f F, humidity: %.2f %%RH\n", temperature,
                       toFahrenheit(temperature), humidity);
 
-        display.clearDisplay();
-
-        display.setCursor(0, 0);
-        display.print("Temp: ");
-        display.setCursor(15, 15);
-        if (settings.showFahrenheit) {
-            display.print(toFahrenheit(temperature));
-            display.print(" F");
-        } else {
-            display.print(temperature);
-            display.print(" C");
-        }
-
-        display.setCursor(0, 30);
-        display.print("Humidity: ");
-        display.setCursor(15, 45);
-        display.print(humidity);
-        display.print(" %");
-
-        display.display();
+        display.showMeasurements(
+            settings.showFahrenheit ? toFahrenheit(temperature) : temperature,
+            settings.showFahrenheit,
+            humidity
+        );
     }
 }
