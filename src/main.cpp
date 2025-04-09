@@ -22,6 +22,7 @@ AppSettings appsettings;
 
 unsigned long previousMillis = 0; // Store the last time a measurement was taken
 
+void setStatus(const char *status);
 void handleReading();
 void handleSettings();
 
@@ -29,18 +30,22 @@ void setup() {
     Serial.begin(SERIAL_BAUDRATE);
 
     display.begin();
+
+    settings.onStatus(setStatus);
     settings.begin();
 
-    settings.loadSettings(appsettings, [](AppSettings &settings) {
-        settings.updateInterval = UPDATEINTERVAL;
-        settings.tempOffset = TEMPERATUREOFFSET;
-        settings.humidityOffset = HUMIDITYOFFSET;
-        settings.showFahrenheit = SHOWFAHRENHEIT ? true : false;
-        strncpy(settings.deviceName, DEVICENAME, sizeof(settings.deviceName) - 1);
-        settings.deviceName[sizeof(settings.deviceName) - 1] = '\0'; // Ensure null termination
+    settings.loadSettings(appsettings, [](AppSettings &defaults) {
+        defaults.updateInterval = UPDATEINTERVAL;
+        defaults.tempOffset = TEMPERATUREOFFSET;
+        defaults.humidityOffset = HUMIDITYOFFSET;
+        defaults.showFahrenheit = SHOWFAHRENHEIT ? true : false;
+        strncpy(appsettings.deviceName, DEVICENAME, sizeof(appsettings.deviceName) - 1);
+        defaults.deviceName[sizeof(appsettings.deviceName) - 1] = '\0'; // Ensure null termination
     });
 
+    wifi.onStatus(setStatus);
     wifi.begin(PORTALTIMEOUT, WIFICONNECTTIMEOUT, WIFICONNECTRETRIES, appsettings.deviceName);
+    
     sensor.begin();
 
     server.serveStatic("/", "/index.html");
@@ -51,11 +56,13 @@ void setup() {
     server.on("/read", HTTP_GET, handleReading);
     server.on("/settings", HTTP_POST, handleSettings);
     server.useDefaultEndpoints();
+    server.onStatus(setStatus);
     server.begin();
 
+    ota.onStatus(setStatus);
     ota.begin(appsettings.deviceName, OTAPASSWORD);
 
-    display.setStatus(wifi.localIP());
+    setStatus(wifi.localIP().c_str());
     delay(2000);
 }
 
@@ -99,8 +106,10 @@ void handleReading() {
     wifinode["rssi"] = WiFi.RSSI();
 
     char lastUpdateStr[32];
-    snprintf(lastUpdateStr, sizeof(lastUpdateStr), "%.2f seconds ago", (millis() - previousMillis) / 1000.0);
+    unsigned long lastupdate = millis() - previousMillis;
+    snprintf(lastUpdateStr, sizeof(lastUpdateStr), "%.2f seconds ago", lastupdate / 1000.0);
     response["lastupdate"] = lastUpdateStr;
+    response["lastupdate_ms"] = lastupdate;
     response["display"] = appsettings.showFahrenheit ? "f" : "c";
     response["devicename"] = appsettings.deviceName;
     response["updateinterval"] = appsettings.updateInterval;
@@ -138,4 +147,8 @@ void handleSettings() {
         response["status"] = "error";
     }
     server.sendJson(response);
+}
+
+void setStatus(const char *status) {
+    display.setStatus(status);
 }

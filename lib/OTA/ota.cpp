@@ -1,20 +1,21 @@
 #include "ota.h"
 #include <ArduinoOTA.h>
 
-OTA::OTA(Logger &log) : _logger(log) {}
-
 void OTA::begin(const char *const hostname, const char *const password) {
-    ArduinoOTA.setPassword(hostname);
-    ArduinoOTA.setHostname(password);
+    ArduinoOTA.setHostname(hostname);
+    ArduinoOTA.setPassword(password);
     ArduinoOTA.onStart([this]() {
         String type = (ArduinoOTA.getCommand() == U_FLASH) ? "sketch" : "filesystem";
         _logger.info(("Start updating " + type).c_str());
     });
     ArduinoOTA.onEnd([this]() { _logger.info("Update Complete"); });
     ArduinoOTA.onProgress([this](unsigned int progress, unsigned int total) {
-        _logger.info(("Progress: " + String((progress * 100) / total) + "%").c_str());
+        String message = "Updating: " + String((progress * 100) / total) + "%";
+        _statuscallback(message.c_str());
+        _logger.info(message.c_str());
     });
     ArduinoOTA.onError([this](ota_error_t error) {
+        _statuscallback("Error updating");
         _logger.error(("Error: " + String(error)).c_str());
         if (error == OTA_AUTH_ERROR) {
             _logger.error("Auth Failed");

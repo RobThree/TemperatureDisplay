@@ -2,6 +2,7 @@
 #define WEBSERVER_H
 
 #include "../Logger/logger.h"
+#include "../statuscallback.h"
 #include <ArduinoJson.h>
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WebServer.h>
@@ -9,7 +10,7 @@
 
 class Webserver {
   public:
-    Webserver(Logger &log, FS fs, int port = 80) : _logger(log), _fs(fs), _server(port) {
+    Webserver(Logger &log, FS fs, int port = 80) : _logger(log), _fs(fs), _server(port), _statuscallback(emptyStatus) {
         _httpUpdateServer.setup(&_server);
         _server.onNotFound([this]() { _server.send(404, "text/plain", "File not found"); });
     };
@@ -27,12 +28,14 @@ class Webserver {
             ESP8266WebServer::THandlerFunction ufn) {
         _server.on(uri, method, fn, ufn);
     }
+    void onStatus(StatusCallback callback) { _statuscallback = callback; }
 
   private:
     Logger &_logger; // Reference to the logger
     FS _fs;
     ESP8266WebServer _server;
     ESP8266HTTPUpdateServer _httpUpdateServer;
+    StatusCallback _statuscallback;
 };
 
 #endif // WEBSERVER_H

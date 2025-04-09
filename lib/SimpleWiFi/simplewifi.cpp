@@ -1,16 +1,16 @@
 #include "simplewifi.h"
 
-SimpleWiFi::SimpleWiFi(Logger &log) : _logger(log) {}
-
 void SimpleWiFi::begin(unsigned long portalTimeout, unsigned long wifiConnectTimeout, unsigned long wifiConnectRetries,
                        const char *apName, const char *apPassword) {
+    _statuscallback("Starting WiFi");
     _logger.info("Starting WiFi");
     _wifiManager.setConfigPortalTimeout(portalTimeout);
     _wifiManager.setConnectTimeout(wifiConnectTimeout);
     _wifiManager.setConnectRetries(wifiConnectRetries);
     _wifiManager.setWiFiAutoReconnect(true);
     if (!_wifiManager.autoConnect(apName, apPassword)) {
-        _logger.error("Autoconnect failed. Restarting...");
+        _statuscallback("Autoconnect failed. Restarting");
+        _logger.error("Autoconnect failed. Restarting");
         delay(3000);
         ESP.restart();
     }
@@ -18,7 +18,8 @@ void SimpleWiFi::begin(unsigned long portalTimeout, unsigned long wifiConnectTim
 
 void SimpleWiFi::ensureConnected() {
     if ((WiFi.status() != WL_CONNECTED)) {
-        _logger.warn("WiFi not connected, reconnecting...");
+        _statuscallback("Reconnecting WiFi");
+        _logger.warn("WiFi not connected, reconnecting");
         WiFi.reconnect();
         unsigned long start = millis();
 
@@ -27,8 +28,10 @@ void SimpleWiFi::ensureConnected() {
         }
 
         if (WiFi.status() == WL_CONNECTED) {
-            _logger.error("WiFi reconnected");
+            _statuscallback("WiFi reconnected");
+            _logger.info("WiFi reconnected");
         } else {
+            _statuscallback("Reconnect WiFi failed. Retrying");
             _logger.warn("Failed to reconnect to WiFi. Retrying...");
             delay(1000);
         }

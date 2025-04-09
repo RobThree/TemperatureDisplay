@@ -3,6 +3,7 @@
 void Webserver::useDefaultEndpoints() {
     _server.on("/reset", HTTP_PUT, [this]() {
         _server.send(200, "text/html", "reset");
+        _statuscallback("Restarting");
         _logger.warn("Restarting");
         ESP.restart();
     });
