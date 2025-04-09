@@ -18,6 +18,7 @@ class Webserver {
     void begin();
     void handleClient();
     void sendJson(const JsonDocument &json, int httpCode = 200);
+    void sendText(const String &content, int httpCode = 200);
     const String &arg(const String &name) const;
     void serveStatic(const char *, const char *path, const char *cacheheader = "max-age=300");
     void on(const String &uri, ESP8266WebServer::THandlerFunction fn) { _server.on(uri, fn); }

@@ -2,11 +2,12 @@
 
 void Webserver::useDefaultEndpoints() {
     _server.on("/reset", HTTP_PUT, [this]() {
-        _server.send(200, "text/html", "reset");
+        sendText("reset");
         _statuscallback("Restarting");
         _logger.warn("Restarting");
         ESP.restart();
     });
+    _server.on("/mac", HTTP_GET, [this]() { sendText(WiFi.macAddress()); });
 }
 
 void Webserver::serveStatic(const char *uri, const char *path, const char *cacheheader) {
@@ -26,5 +27,6 @@ void Webserver::sendJson(const JsonDocument &json, int httpCode) {
     serializeJson(json, response);
     _server.send(httpCode, "application/json", response);
 }
+void Webserver::sendText(const String &content, int httpCode) { _server.send(httpCode, "text/plain", content); }
 
 const String &Webserver::arg(const String &name) const { return _server.arg(name); }
