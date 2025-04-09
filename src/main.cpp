@@ -22,8 +22,8 @@ AppSettings appsettings;
 
 unsigned long previousMillis = 0; // Store the last time a measurement was taken
 
-void doReading();
-void saveSettings();
+void handleReading();
+void handleSettings();
 void setStatus(Logger::Level level, const String &status);
 
 void setup() {
@@ -49,8 +49,8 @@ void setup() {
     server.serveStatic("/js", "/app.js");
     server.serveStatic("/favicon.ico", "/favicon.svg");
     server.serveStatic("/settings", "/settings.html");
-    server.on("/read", HTTP_GET, doReading);
-    server.on("/settings", HTTP_POST, saveSettings);
+    server.on("/read", HTTP_GET, handleReading);
+    server.on("/settings", HTTP_POST, handleSettings);
     server.useDefaultEndpoints();
     server.begin();
 
@@ -85,7 +85,7 @@ void loop() {
     }
 }
 
-void doReading() {
+void handleReading() {
     JsonDocument response;
     JsonObject celsiusnode = response["celsius"].to<JsonObject>();
     celsiusnode["temperature"] = lastreading.getTemperatureDisplayValue(false);
@@ -108,7 +108,7 @@ void doReading() {
     server.sendJson(response);
 }
 
-void saveSettings() {
+void handleSettings() {
     AppSettings newsettings;
     JsonDocument response;
     response["status"] = "";
