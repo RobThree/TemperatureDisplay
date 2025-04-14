@@ -49,12 +49,18 @@ label {
 
 input[type='text'],
 input[type='number'] {
-    width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
     box-sizing: border-box;
+}
+input[type='text'],
+input[type='url'] {
+    width: 100%;
+}
+input[type='number'] {
+    width: 20%;
 }
 
 input[type='checkbox'] {
